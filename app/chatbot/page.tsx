@@ -14,7 +14,7 @@ export default function FitnessAssistant() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const handleSend = () => {
+  const handleSend = async() => {
     if (!userInput.trim()) return;
 
     const timestamp = new Date().toLocaleTimeString([], {
@@ -27,18 +27,43 @@ export default function FitnessAssistant() {
       { type: "user", content: userInput, timestamp },
     ]);
 
-    setTimeout(() => {
+    setUserInput("");
+    
+    try {
+      // Make API call to backend
+      const response = await fetch("http://localhost:8000/chats", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_input: userInput }),
+      });
+
+      // Handle response
+      const data = await response.json();
+      const botMessage = data.response; // Assuming the response has a 'response' field
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: "bot",
+            content: botMessage,
+            timestamp,
+          },
+        ]);
+      }
+     catch (error) {
+      console.error("Error:", error);
       setMessages((prev) => [
         ...prev,
         {
           type: "bot",
-          content: `Here’s an exercise tailored for "${userInput}"!`,
+          content: "Oops! Something went wrong. Please try again.",
           timestamp,
         },
       ]);
-    }, 1000);
-
-    setUserInput("");
+    }
+   
   };
 
   // Handle pressing 'Enter' to send a message

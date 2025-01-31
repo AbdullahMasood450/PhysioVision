@@ -42,9 +42,21 @@ class UserSignUp(BaseModel):
 @app.post("/api/signup")
 async def sign_up(user: UserSignUp):
     try:
-        user_data = user.dict()  # Convert Pydantic model to dictionary
+        # Check if username or email already exists
+        existing_user = collection_users.find_one({"username": user.username})
+        existing_email = collection_users.find_one({"email": user.email})
+
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Username already exists. Try another one.")
+        
+        if existing_email:
+            raise HTTPException(status_code=400, detail="Email is already used. Try another one.")
+
+        # Convert Pydantic model to dictionary
+        user_data = user.dict()
         result = collection_users.insert_one(user_data)  # Insert the document
         return {"message": "User registered successfully!"}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
 

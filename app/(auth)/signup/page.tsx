@@ -48,8 +48,8 @@ export default function SignUp() {
         // Redirect to the dashboard after successful signup
         router.push("/dashboard");
       }
-    } catch (err) {
-      setError("Error signing up, please try again.");
+    } catch (err : any) {
+      setError(err.response.data.detail);
       console.error(err);
     } finally {
       setIsSubmitting(false);

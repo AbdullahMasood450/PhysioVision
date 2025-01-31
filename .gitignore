@@ -37,3 +37,7 @@ next-env.d.ts
 
 # contentlayer
 .contentlayer
+
+#
+Backend/app/__pycache__/
+Backend/app/myenv/
